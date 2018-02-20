@@ -6,33 +6,35 @@
 #include <sys/stat.h>
 
 typedef struct {
-    char* array;
-    size_t used;
+    char** array;
     size_t size;
+    size_t used;
+    
 } Array;
 
-void initArray(Array *a, size_t initialSize) {
-  a->array = (char *)malloc(initialSize * sizeof(char));
+void initArray(Array* a, size_t initialSize) {
+  a->array = (char**)malloc(initialSize * sizeof(char));
   a->used = 0;
   a->size = initialSize;
+  int i;
+  //for (i = 0; i < a->size; i++)
+    //a->array[i] = (char*)malloc(10 * sizeof(char));
 }
 
-
 void insertArray(Array* a, char* element) {
-  //printf("%s\n", element);
+  printf("%s\n", element);
   // a->used is the number of used entries, because a->array[a->used++] updates a->used only *after* the array has been accessed.
   // Therefore a->used can go up to a->size 
   if (a->used == a->size) {
     a->size *= 2;
-    a->array = (char *)realloc(a->array, a->size * sizeof(char));
+    a->array = (char**)realloc(a->array, a->size * sizeof(char));
   }
-  a->array[a->used] = (char*)malloc(2*sizeof(element));
-  a->array[a->used] = *element;
+  a->array[a->used] = (char*)malloc(20*sizeof(element));
+  strcpy(a->array[a->used], element);
   a->used++;
 }
 
-
-void freeArray(Array *a) {
+void freeArray(Array* a) {
   free(a->array);
   a->array = NULL;
   a->used = a->size = 0;
@@ -52,15 +54,16 @@ char** readFile(char* filepath)
     Array file;
     initArray(&file, 1);
     int i = 0;
-    char* word;
     if(temp != NULL)
     {
         while(!feof(temp))
         {
+            char* word;
             fscanf(temp, "%s", word);
             printf("%s\n", word);
             insertArray(&file, word);
             i++;
+            word = "";
         }
     }
     else
@@ -68,16 +71,9 @@ char** readFile(char* filepath)
         printf("File \"%s\" was empty!\n", filepath);
         return NULL;
     }
-    i = file.size;
-    printf("%d\n", i);
-    int x = 0;
-    for(x = 0; x < i; x++)
-    {
-        printf("%s\n", &file.array[x]);
-    }
-    char** returnFile = &file.array;
-    //freeArray(&file);
-    return returnFile;
+    char** send = file.array;
+    freeArray(&file);
+    return send;
 }
 
 int main(int argc, char *argv[])
