@@ -124,7 +124,9 @@ char** readFile(char* filepath)
 
 void split_str(Array* temp, char* string)
 {
-    char* token = strtok(string, " ");
+    char* word = (char*)malloc(strlen(string)+1);
+    strcpy(word, string);
+    char* token = strtok(word, " ");
     
     while(token != NULL)
     {
@@ -234,24 +236,13 @@ int main(int argc, char *argv[])
             Array newWords;
             initArray(&newWords, 2);
             
-            printf("addedLines.array[%d]: %s\n", j, addedLines.array[j]);
+            printf("before split: addedLines.array[%d]: %s\n", j, addedLines.array[j]);
             //printf("Address of: %p\n", addedLines.array[j]);
             split_str(&newWords, addedLines.array[j]);
             
+            printf("after split: addedLines.array[%d]: %s\n", j, addedLines.array[j]);
+            
             char* address = addedLines.array[j];
-            
-            //printf("OLD WORDS:\n");
-            int z;
-            for(z = 0; z < oldWords.used; z++)
-            {
-                //printf("%s\n", oldWords.array[z]);
-            }
-            
-            //printf("NEW WORDS:\n");
-            for(z = 0; z < newWords.used; z++)
-            {
-                //printf("%s\n", newWords.array[z]);
-            }
             
             if(strcmp(oldWords.array[0], newWords.array[0]) == 0)
             {
