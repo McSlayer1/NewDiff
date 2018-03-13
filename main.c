@@ -8,6 +8,7 @@
 // GLOBAL VARIABLES
 int oldFileCount = 0;
 int newFileCount = 0;
+int sensitivity = 2;
 char* oldFileName;
 char* newFileName;
 
@@ -69,6 +70,19 @@ int arrayContains(Array* a, char* element)
     return 0;
 }
 
+void arrayRemove(Array* a, int index)
+{
+    int i;
+    for(i = index; i < a->used; i++)
+    {
+        a->array[i] = realloc(a->array[i], sizeof(char) * 254);
+        a->array[i] = a->array[i+1];
+    }
+    char** tmp = realloc(a->array, (a->used - 1) * sizeof(*a->array) );
+    a->used = a->used - 1;
+    a->array = tmp;
+}
+
 char* getFileTime(char* filepath)
 {
     struct stat tempTime;
@@ -92,10 +106,8 @@ char** readFile(char* filepath)
             //fscanf(temp, "%s", word);
             getline(&word, &len, temp);
             //strcat(word, "\0");
-            //printf("%s\n", word);
             insertArray(&file, word);
             count++;
-            //printf("size: %lu\n", sizeof(file.array));
             i++;
             //word = "";
         }
@@ -105,8 +117,6 @@ char** readFile(char* filepath)
         printf("File \"%s\" was empty!\n", filepath);
         return NULL;
     }
-    //for(i=0; i<file.size;i++)
-    //    printf("Callback: %s\n", file.array[i]);
         
     if(strcmp(filepath, oldFileName) == 0)
     {
@@ -118,7 +128,6 @@ char** readFile(char* filepath)
     }
     char** send = file.array;
     //freeArray(&file);
-    //printf("Returning File!\n");
     return file.array;
 }
 
@@ -214,7 +223,6 @@ int main(int argc, char *argv[])
             insertArray(&addedLines, newFile[i]);
         }
     }
-    //printf("\n");
     
     // Do the nasty work of checking between the added and removed items
     // to see what was "changed" between each file
@@ -235,15 +243,15 @@ int main(int argc, char *argv[])
         {
             Array newWords;
             initArray(&newWords, 2);
-            
-            printf("before split: addedLines.array[%d]: %s\n", j, addedLines.array[j]);
-            //printf("Address of: %p\n", addedLines.array[j]);
+
             split_str(&newWords, addedLines.array[j]);
-            
-            printf("after split: addedLines.array[%d]: %s\n", j, addedLines.array[j]);
             
             char* address = addedLines.array[j];
             
+            // if the the first words of each line match
+            // cycle word by word to test exactness of
+            // each line, if exact enought (sensitivity)
+            // then the lines would resemble that of a change
             if(strcmp(oldWords.array[0], newWords.array[0]) == 0)
             {
                 t = 0;
@@ -264,8 +272,6 @@ int main(int argc, char *argv[])
                     
                     if(strcmp(oldWord, newWord) == 0)
                     {
-                        //printf("Old: %s\n", oldWord);
-                        //printf("New: %s\n", newWord);
                         score_exact++;
                         score_succession++;
                     }
@@ -279,39 +285,57 @@ int main(int argc, char *argv[])
                         break;
                         
                     t++;
-                    //printf("next\n");
                 }
                 
-                if((score_exact + score_succession) > 0)
+                if((score_exact + score_succession) > sensitivity)
                 {
-                    printf("A change!!!!\n");
                     insertArray(&changedLines, removedLines.array[i]);
                     insertArray(&changedLines, addedLines.array[j]);
                 }
                 score_exact = 0;
                 score_succession = 0;
             }
-            
-            //printf("Freeing newWords\n");
+            // clean up the array for new words
             freeArray(&newWords);
         }
-        //printf("Freeing oldWords\n");
+        // clean up the array for old words
         freeArray(&oldWords);
-        //break;
     }
     
-    // filter out the changed items from the added and removed items
-    
     // Write out what was changed
-    //printf("Changed from %s ---> %s\n--------------------------\n", oldFileName, newFileName);
+    printf("Changed from %s ---> %s\n--------------------------\n", oldFileName, newFileName);
     for(i = 0; i < changedLines.used; i+=2)
     {
         printf("%s ---> %s\n", changedLines.array[i], changedLines.array[i+1]);
     }
+    printf("\n--------------------------\n\n");
+
     
     // Write out what was removed
+    printf("Removed from %s\n--------------------------\n", oldFileName);
+    for(i = 0; i < removedLines.used; i++)
+    {
+        // do a quick check to make sure the item isnt
+        // a changed item
+        if(arrayContains(&changedLines, removedLines.array[i]) == 1)
+            continue;
+            
+        printf("%s", removedLines.array[i]);
+    }
+    printf("\n--------------------------\n\n");
     
     // Write out what was added
+    printf("Added from %s\n--------------------------\n", newFileName);
+    for(i = 0; i < addedLines.used; i++)
+    {
+        // do a quick check to make sure the item isnt
+        // a changed item
+        if(arrayContains(&changedLines, addedLines.array[i]) == 1)
+            continue;
+            
+        printf("%s", addedLines.array[i]);
+    }
+    printf("\n--------------------------\n");
     
     // *Optional* write out to a file that is .csv format
     // and formatted to be compatible with MS Excel (or any other spreadsheet software)
