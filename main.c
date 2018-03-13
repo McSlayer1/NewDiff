@@ -147,12 +147,15 @@ void split_str(Array* temp, char* string)
 
 int main(int argc, char *argv[])
 {
-    system("clear");
+    //system("clear");
     if(argc <= 1)
     {
         printf("Enter two files to compare!\n");
         return -1;
     }
+    char* messageOut = malloc(sizeof(char)*254);
+    strcpy(messageOut, "");
+    char* temp; // = malloc(sizeof(char) * 254);
     
     oldFileName = argv[1];
     newFileName = argv[2];
@@ -165,9 +168,19 @@ int main(int argc, char *argv[])
     
     char* oldFileTime = getFileTime(oldFileName);
     printf("Last modified time for %s: %s\n",oldFileName, oldFileTime);
+    temp = malloc(sizeof(char) * 254);
+    sprintf(temp, "Last modified time for %s: %s\n",oldFileName, oldFileTime);
+    messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+    strcat(messageOut, temp);
     
     char* newFileTime = getFileTime(newFileName);
     printf("Last modified time for %s: %s\n",newFileName, newFileTime);
+    temp = realloc(temp, sizeof(char) * 254);
+    sprintf(temp, "Last modified time for %s: %s\n",newFileName, newFileTime);
+    messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+    strcat(messageOut, temp);
+    free(temp);
+    temp = "";
     
     // Make a common list of elements between both files
     Array commonLines;
@@ -304,15 +317,33 @@ int main(int argc, char *argv[])
     
     // Write out what was changed
     printf("Changed from %s ---> %s\n--------------------------\n", oldFileName, newFileName);
+    temp = malloc(sizeof(char) * 254);
+    sprintf(temp, "Changed from %s ---> %s\n--------------------------\n", oldFileName, newFileName);
+    messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+    strcat(messageOut, temp);
     for(i = 0; i < changedLines.used; i+=2)
     {
         printf("%s ---> %s\n", changedLines.array[i], changedLines.array[i+1]);
+        temp = realloc(temp, sizeof(char) * 254);
+        sprintf(temp, "%s ---> %s\n", changedLines.array[i], changedLines.array[i+1]);
+        messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+        strcat(messageOut, temp);
     }
     printf("\n--------------------------\n\n");
+    temp = realloc(temp, sizeof(char) * 254);
+    sprintf(temp, "\n--------------------------\n\n");
+    messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+    strcat(messageOut, temp);
+    free(temp);
+    temp = "";
 
     
     // Write out what was removed
     printf("Removed from %s\n--------------------------\n", oldFileName);
+    temp = malloc(sizeof(char) * 254);
+    sprintf(temp, "Removed from %s\n--------------------------\n", oldFileName);
+    messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+    strcat(messageOut, temp);
     for(i = 0; i < removedLines.used; i++)
     {
         // do a quick check to make sure the item isnt
@@ -321,11 +352,25 @@ int main(int argc, char *argv[])
             continue;
             
         printf("%s", removedLines.array[i]);
+        temp = realloc(temp, sizeof(char) * 254);
+        sprintf(temp,"%s", removedLines.array[i]);
+        messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+        strcat(messageOut, temp);
     }
     printf("\n--------------------------\n\n");
+    temp = realloc(temp, sizeof(char) * 254);
+    sprintf(temp, "\n--------------------------\n\n");
+    messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+    strcat(messageOut, temp);
+    free(temp);
+    temp = "";
     
     // Write out what was added
     printf("Added from %s\n--------------------------\n", newFileName);
+    temp = malloc(sizeof(char) * 254);
+    sprintf(temp, "Added from %s\n--------------------------\n", newFileName);
+    messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+    strcat(messageOut, temp);
     for(i = 0; i < addedLines.used; i++)
     {
         // do a quick check to make sure the item isnt
@@ -334,11 +379,32 @@ int main(int argc, char *argv[])
             continue;
             
         printf("%s", addedLines.array[i]);
+        temp = realloc(temp, sizeof(char) * 1024);
+        sprintf(temp,"%s", addedLines.array[i]);
+        messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+        strcat(messageOut, temp);
     }
     printf("\n--------------------------\n");
+    temp = realloc(temp, sizeof(char) * 254);
+    sprintf(temp, "\n--------------------------\n\n");
+    messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+    strcat(messageOut, temp);
+    strcat(messageOut, "\0");
+    free(temp);
+    temp = "";
+    
+    //printf("Replay:\n%s\n", messageOut);
     
     // *Optional* write out to a file that is .csv format
     // and formatted to be compatible with MS Excel (or any other spreadsheet software)
+    FILE* outFile;
+    outFile = fopen("diff_output.txt", "w");
+    fputs(messageOut, outFile);
+    fclose(outFile);
+    free(messageOut);
+    messageOut = "";
+    
+    printf("Done! Log saved under diff_output.txt\n");
     
     // Done exit
     return 0;
