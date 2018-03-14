@@ -15,6 +15,7 @@ was modified to line B in the new file. The the next set of data will be the ite
 the last set of data will be the additions added to the new file.
 
 The output should appear as follows:
+
 Last modified time for <old text file>: Day Month Date HH:MM:SS YYYY
 
 Last modified time for <new text file>: Day Month Date HH:MM:SS YYYY
