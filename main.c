@@ -398,13 +398,22 @@ int main(int argc, char *argv[])
     // *Optional* write out to a file that is .csv format
     // and formatted to be compatible with MS Excel (or any other spreadsheet software)
     FILE* outFile;
-    outFile = fopen("diff_output.txt", "w");
+    char* out_filename = malloc(sizeof(char) * 254);
+    strcpy(out_filename, "");
+    time_t ti = time(NULL);
+    struct tm tm = *localtime(&ti);
+    char* time_str = malloc(sizeof(char) * 254);
+    strcpy(time_str, "");
+    sprintf(time_str, "diff_logs/diff_output_%d%d%d_%d%d%d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    strcat(out_filename, time_str);
+    strcat(out_filename, ".txt");
+    outFile = fopen(out_filename, "w");
     fputs(messageOut, outFile);
     fclose(outFile);
     free(messageOut);
     messageOut = "";
     
-    printf("Done! Log saved under diff_output.txt\n");
+    printf("Done! Log saved under %s\n", out_filename);
     
     // Done exit
     return 0;
