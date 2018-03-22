@@ -12,6 +12,8 @@ int sensitivity = 2;
 char* oldFileName;
 char* newFileName;
 
+// An array struct to hold an array
+// and the arrtibutes about the array
 typedef struct 
 {
     char** array;
@@ -20,6 +22,7 @@ typedef struct
     
 } Array;
 
+// initializes an array passed to it, with a given size
 void initArray(Array* a, size_t initialSize) 
 {
   a->array = (char**)malloc(initialSize * sizeof(*a->array));
@@ -27,6 +30,7 @@ void initArray(Array* a, size_t initialSize)
   a->size = initialSize;
 }
 
+// instert an element into an array
 void insertArray(Array* a, char* element) 
 {
   // a->used is the number of used entries, because a->array[a->used++] updates a->used only *after* the array has been accessed.
@@ -40,6 +44,7 @@ void insertArray(Array* a, char* element)
   
 }
 
+// frees a given array from memory
 void freeArray(Array* a) {
   int i;
   for (i = 0; i < a->used; i++)
@@ -54,6 +59,9 @@ void freeArray(Array* a) {
   a->size = 0;
 }
 
+// search an array if it contains a certain element
+// returns 1 if the array contains the element
+// returns 0 if the array DOES NOT contain the element
 int arrayContains(Array* a, char* element)
 {
     //bool found = false;
@@ -70,6 +78,8 @@ int arrayContains(Array* a, char* element)
     return 0;
 }
 
+// removes an element from an array,
+// using the elements index
 void arrayRemove(Array* a, int index)
 {
     int i;
@@ -83,6 +93,7 @@ void arrayRemove(Array* a, int index)
     a->array = tmp;
 }
 
+// get the last modified time a file
 char* getFileTime(char* filepath)
 {
     struct stat tempTime;
@@ -90,6 +101,8 @@ char* getFileTime(char* filepath)
     return ctime(&tempTime.st_mtime);
 }
 
+// read the file and store the lines into
+// a dynamically allocated array
 char** readFile(char* filepath)
 {
     int count = 0;
@@ -131,6 +144,8 @@ char** readFile(char* filepath)
     return file.array;
 }
 
+// splits a string (sentence in this context)
+// into an array of words
 void split_str(Array* temp, char* string)
 {
     char* word = (char*)malloc(strlen(string)+1);
@@ -145,6 +160,7 @@ void split_str(Array* temp, char* string)
     }
 }
 
+// MAIN APPLICATION
 int main(int argc, char *argv[])
 {
     //system("clear");
@@ -153,9 +169,9 @@ int main(int argc, char *argv[])
         printf("Enter two files to compare!\n");
         return -1;
     }
-    char* messageOut = malloc(sizeof(char)*254);
+    register char* messageOut = malloc(sizeof(char)*254);
     strcpy(messageOut, "");
-    char* temp; // = malloc(sizeof(char) * 254);
+    register char* temp; // = malloc(sizeof(char) * 254);
     
     oldFileName = argv[1];
     newFileName = argv[2];
@@ -244,8 +260,8 @@ int main(int argc, char *argv[])
     int score_exact = 0;
     int score_succession = 0;
     int t;
-    char* oldWord = (char*)malloc(sizeof(char)*255);
-    char* newWord = (char*)malloc(sizeof(char)*255);
+    register char* oldWord = (char*)malloc(sizeof(char)*255);
+    register char* newWord = (char*)malloc(sizeof(char)*255);
     for(i = 0; i < removedLines.used; i++)
     {
         Array oldWords;
@@ -379,7 +395,7 @@ int main(int argc, char *argv[])
             continue;
             
         printf("%s", addedLines.array[i]);
-        temp = realloc(temp, sizeof(char) * 1024);
+        temp = realloc(temp, sizeof(char) * 254);
         sprintf(temp,"%s", addedLines.array[i]);
         messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
         strcat(messageOut, temp);
@@ -402,11 +418,7 @@ int main(int argc, char *argv[])
     strcpy(out_filename, "");
     time_t ti = time(NULL);
     struct tm tm = *localtime(&ti);
-    char* time_str = malloc(sizeof(char) * 254);
-    strcpy(time_str, "");
-    sprintf(time_str, "diff_logs/diff_output_%d%d%d_%d%d%d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-    strcat(out_filename, time_str);
-    strcat(out_filename, ".txt");
+    sprintf(out_filename, "diff_logs/diff_output_%d%d%d_%d%d%d.txt", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
     outFile = fopen(out_filename, "w");
     fputs(messageOut, outFile);
     fclose(outFile);
@@ -414,6 +426,8 @@ int main(int argc, char *argv[])
     messageOut = "";
     
     printf("Done! Log saved under %s\n", out_filename);
+    free(out_filename);
+    out_filename = "";
     
     // Done exit
     return 0;
