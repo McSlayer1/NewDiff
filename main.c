@@ -163,9 +163,6 @@ void split_str(Array* temp, char* string)
 // MAIN APPLICATION
 int main(int argc, char *argv[])
 {
-    
-    while(1){}
-    //system("clear");
     if(argc <= 1)
     {
         printf("Enter two files to compare!\n");
