@@ -158,14 +158,13 @@ void split_str(Array* temp, char* string)
         insertArray(temp, token);
         token = strtok(NULL, " ");
     }
+    
+    free(word);
 }
 
 // MAIN APPLICATION
 int main(int argc, char *argv[])
 {
-    
-    while(1){}
-    //system("clear");
     if(argc <= 1)
     {
         printf("Enter two files to compare!\n");
@@ -430,6 +429,14 @@ int main(int argc, char *argv[])
     printf("Done! Log saved under %s\n", out_filename);
     free(out_filename);
     out_filename = "";
+    
+    // free some other stuff from memory that
+    // were allocated earlier
+    freeArray(&removedLines);
+    freeArray(&addedLines);
+    freeArray(&changedLines);
+    free(oldFile);
+    free(newFile);
     
     // Done exit
     return 0;
