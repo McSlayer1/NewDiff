@@ -1,7 +1,11 @@
 #!/bin/bash
 cmd=$1
+<<<<<<< HEAD
 user=`whoami`
 echo "Command:  $cmd"
+=======
+echo $cmd
+>>>>>>> parent of 301342e... Had to make a few fixes that were caused from making and testing the shell script "mem_use.sh"
 used1=`free | grep Mem | awk '{print $3}'`
 time1=`date +%s%6N`;
 bash -c "exec $cmd > /dev/null 2>&1 &"
