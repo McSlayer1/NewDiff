@@ -184,18 +184,31 @@ int main(int argc, char *argv[])
     newFile = readFile(newFileName);
     
     char* oldFileTime = getFileTime(oldFileName);
-    printf("Last modified time for %s: %s\n",oldFileName, oldFileTime);
+    printf("Last modified time for %s: %s",oldFileName, oldFileTime);
     temp = malloc(sizeof(char) * 254);
-    sprintf(temp, "Last modified time for %s: %s\n",oldFileName, oldFileTime);
+    sprintf(temp, "Last modified time for %s: %s",oldFileName, oldFileTime);
+    messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+    strcat(messageOut, temp);
+    
+    printf("Number of lines in %s: %d\n\n", oldFileName, oldFileCount);
+    temp = realloc(temp, sizeof(char) * 254);
+    sprintf(temp, "Number of lines in %s: %d\n\n", oldFileName, oldFileCount);
     messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
     strcat(messageOut, temp);
     
     char* newFileTime = getFileTime(newFileName);
-    printf("Last modified time for %s: %s\n",newFileName, newFileTime);
+    printf("Last modified time for %s: %s",newFileName, newFileTime);
     temp = realloc(temp, sizeof(char) * 254);
-    sprintf(temp, "Last modified time for %s: %s\n",newFileName, newFileTime);
+    sprintf(temp, "Last modified time for %s: %s",newFileName, newFileTime);
     messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
     strcat(messageOut, temp);
+    
+    printf("Number of lines in %s: %d\n\n", newFileName, newFileCount);
+    temp = realloc(temp, sizeof(char) * 254);
+    sprintf(temp, "Number of lines in %s: %d\n\n", newFileName, newFileCount);
+    messageOut = realloc(messageOut, strlen(temp) + strlen(messageOut) + 1);
+    strcat(messageOut, temp);
+    
     free(temp);
     temp = "";
     
