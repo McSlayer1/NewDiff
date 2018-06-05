@@ -55,5 +55,6 @@ Added from \<new text file\>
 ...
 
 ...
+
 </br>
 **Before running the program, make a directory called 'diff_logs' or the program will seg fault!**
